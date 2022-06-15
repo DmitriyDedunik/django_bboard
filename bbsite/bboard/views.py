@@ -2,4 +2,6 @@ from django.shortcuts import render
 from django.http import HttpResponse
 
 def index(request):
+    context = ''
+    # For
     return HttpResponse('Доска объявлений')

@@ -9,7 +9,7 @@ class Bb(models.Model):
     published = models.DateTimeField(auto_now_add=True, db_index=True)
 
     class Meta:
-        ordering = ('-published')
+        ordering = ('-published',)
 
     def __str__(self):
         return self.title
