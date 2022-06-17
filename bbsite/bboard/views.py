@@ -24,5 +24,32 @@ class BbCreateView(CreateView):
     form_class = BbForm
     saccess_url = '/bboard/'
 
+def BbCreateView_new(request):
+
+    if request.method == "POST":      
+        
+        form = BbForm(request.POST)
+        form.save()
+
+        # bb = Bb.objects.create()
+        # bb.title = request.POST.title
+        # bb.content = request.POST.content
+        # bb.price = request.POST.price
+        # bb.rubric = request.POST.rubric
+        # bb.save()
+
+        template = 'bboard/index.html'
+        bbs = Bb.objects.all()
+        context = {'bbs': bbs}
+        return render(request, template, context)
+
+    else:
+        template = 'bboard/create_new.html'
+        form = BbForm()
+        context = {'form': form}
+        return render(request, template, context)   
+
+    
+
 
 
