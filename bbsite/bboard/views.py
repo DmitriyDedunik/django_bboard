@@ -2,7 +2,7 @@ from os import access
 from re import template
 from django.shortcuts import render
 from django.http import HttpResponse
-from .models import Bb
+from .models import Bb, Rubric
 from django.views.generic.edit import CreateView
 from .forms import BbForm
 
@@ -22,21 +22,21 @@ def index(request):
 class BbCreateView(CreateView):
     template_name = 'bboard/create.html'
     form_class = BbForm
-    saccess_url = '/bboard/'
+    success_url = '/bboard/'
 
 def BbCreateView_new(request):
 
     if request.method == "POST":      
         
-        form = BbForm(request.POST)
-        form.save()
+        # form = BbForm(request.POST)
+        # form.save()
 
-        # bb = Bb.objects.create()
-        # bb.title = request.POST.title
-        # bb.content = request.POST.content
-        # bb.price = request.POST.price
-        # bb.rubric = request.POST.rubric
-        # bb.save()
+        bb = Bb.objects.create()
+        bb.title = request.POST['title']
+        bb.content = request.POST['content']
+        bb.price = request.POST['price']
+        bb.rubric = Rubric.objects.get(pk=request.POST['rubric'])
+        bb.save()
 
         template = 'bboard/index.html'
         bbs = Bb.objects.all()
@@ -49,7 +49,9 @@ def BbCreateView_new(request):
         context = {'form': form}
         return render(request, template, context)   
 
-    
-
-
+def by_rubric(request, rubric_id):
+    template = 'bboard/by_rubric.html'
+    bbs = Bb.objects.filter(rubric = Rubric.objects.get(pk=rubric_id))
+    context = {'bbs': bbs}
+    return render(request, template, context)
 
