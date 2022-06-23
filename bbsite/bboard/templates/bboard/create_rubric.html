@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 
 {% block title %}
-Новое объявление
+Новая рубрика
 {% endblock %}
 
 {% block content %}
-   <h1>Новое объявление</h1>
+   <h1>Новая рубрика</h1>
    <form method="post">
       {% csrf_token %}
       {{ form.as_p }}

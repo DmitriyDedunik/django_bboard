@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from .models import Bb, Rubric
 from django.views.generic.edit import CreateView
-from .forms import BbForm
+from .forms import BbForm, RubricForm
 
 # def index(request):
 #     context = 'Доска объявлений\n\n'
@@ -19,9 +19,20 @@ def index(request):
     context = {'bbs': bbs}
     return render(request, template, context)
 
+def rubrics(request):
+    template = 'bboard/rubrics.html'
+    rubrics = Rubric.objects.all()
+    context = {'rubrics': rubrics}
+    return render(request, template, context)    
+
 class BbCreateView(CreateView):
     template_name = 'bboard/create.html'
     form_class = BbForm
+    success_url = '/bboard/'
+
+class RubricCreate(CreateView):
+    template_name = 'bboard/create_rubric.html'
+    form_class = RubricForm
     success_url = '/bboard/'
 
 def BbCreateView_new(request):
@@ -51,7 +62,8 @@ def BbCreateView_new(request):
 
 def by_rubric(request, rubric_id):
     template = 'bboard/by_rubric.html'
-    bbs = Bb.objects.filter(rubric = Rubric.objects.get(pk=rubric_id))
-    context = {'bbs': bbs}
+    rubric = Rubric.objects.get(pk=rubric_id)
+    bbs = Bb.objects.filter(rubric = rubric)
+    context = {'bbs': bbs, 'rubric': rubric}
     return render(request, template, context)
 

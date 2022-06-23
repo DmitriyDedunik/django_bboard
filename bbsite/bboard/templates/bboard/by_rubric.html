@@ -1,20 +1,17 @@
-<!DOCTYPE html>
-<html>
-   <head>
-      <meta charset="utf-8">
-      <title>
-         Рубрика
-      </title>
-   </head>
-   <body>
-    <h1>Рубрика</h1>
-    {% for bb in bbs %}
-        <div>
-            <h2>{{bb.title}}</h2>
-            <p>{{bb.content}}</p>
-            <p>{{bb.price}}</p>
-            <p>{{bb.published|date:'d.m.y H:i:s'}}</p>           
-        </div>
-    {% endfor %}
-   </body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}
+Рубрика
+{% endblock %}
+
+{% block content %}
+   <h1>Рубрика: {{rubric.name}}</h1>
+   {% for bb in bbs %}
+      <div>
+         <h2>{{bb.title}}</h2>
+         <p>{{bb.content}}</p>
+         <p>{{bb.price}}</p>
+         <p>{{bb.published|date:'d.m.y H:i:s'}}</p>           
+      </div>
+   {% endfor %}
+{% endblock %}
