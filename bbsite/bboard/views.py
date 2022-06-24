@@ -1,7 +1,5 @@
-from os import access
-from re import template
-from django.shortcuts import render
-from django.http import HttpResponse
+from django.shortcuts import redirect, render
+from django.urls import reverse_lazy
 from .models import Bb, Rubric
 from django.views.generic.edit import CreateView
 from .forms import BbForm, RubricForm
@@ -16,7 +14,8 @@ from .forms import BbForm, RubricForm
 def index(request):
     template = 'bboard/index.html'
     bbs = Bb.objects.all()
-    context = {'bbs': bbs}
+    rubrics = Rubric.objects.all()
+    context = {'bbs': bbs, 'rubrics': rubrics}
     return render(request, template, context)
 
 def rubrics(request):
@@ -25,45 +24,58 @@ def rubrics(request):
     context = {'rubrics': rubrics}
     return render(request, template, context)    
 
+
 class BbCreateView(CreateView):
     template_name = 'bboard/create.html'
     form_class = BbForm
-    success_url = '/bboard/'
+    success_url = reverse_lazy('bbsite_app:index')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['rubrics'] = Rubric.objects.all()
+        return context
+
 
 class RubricCreate(CreateView):
     template_name = 'bboard/create_rubric.html'
     form_class = RubricForm
-    success_url = '/bboard/'
+    success_url = reverse_lazy('bbsite_app:index')
+    
 
 def BbCreateView_new(request):
 
     if request.method == "POST":      
         
-        # form = BbForm(request.POST)
-        # form.save()
+        form = BbForm(request.POST)
+        if form.is_valid():
+            form.save()
 
-        bb = Bb.objects.create()
-        bb.title = request.POST['title']
-        bb.content = request.POST['content']
-        bb.price = request.POST['price']
-        bb.rubric = Rubric.objects.get(pk=request.POST['rubric'])
-        bb.save()
+        # bb = Bb.objects.create()
+        # bb.title = request.POST['title']
+        # bb.content = request.POST['content']
+        # bb.price = request.POST['price']
+        # bb.rubric = Rubric.objects.get(pk=request.POST['rubric'])
+        # bb.save()
 
-        template = 'bboard/index.html'
-        bbs = Bb.objects.all()
-        context = {'bbs': bbs}
-        return render(request, template, context)
+        return redirect('bbsite_app:index')
+        # template = 'bboard/index.html'
+        # bbs = Bb.objects.all()
+        # rubrics = Rubric.objects.all()
+        # context = {'bbs': bbs, 'rubrics': rubrics}
+        # return render(request, template, context)
 
     else:
         template = 'bboard/create_new.html'
         form = BbForm()
-        context = {'form': form}
+        rubrics = Rubric.objects.all()
+        context = {'form': form, 'rubrics': rubrics}
         return render(request, template, context)   
 
 def by_rubric(request, rubric_id):
-    template = 'bboard/by_rubric.html'
+    template = 'bboard/index.html'
     rubric = Rubric.objects.get(pk=rubric_id)
     bbs = Bb.objects.filter(rubric = rubric)
-    context = {'bbs': bbs, 'rubric': rubric}
+    rubrics = Rubric.objects.all()
+    context = {'bbs': bbs, 'rubric': rubric, 'rubrics': rubrics}
     return render(request, template, context)
 

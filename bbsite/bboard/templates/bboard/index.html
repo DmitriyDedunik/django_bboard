@@ -5,7 +5,11 @@
 {% endblock %}
 
 {% block content %}
-   <h1>Объявления</h1>
+   {%if rubric %}
+      <h1>Рубрика: {{rubric.name}}</h1>     
+   {%else%}
+      <h1>Объявления</h1>
+   {%endif%}
    {% for bb in bbs %}
       <div>
          <h2>{{bb.title}}</h2>
