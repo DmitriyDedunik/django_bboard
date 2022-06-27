@@ -1,3 +1,4 @@
+from distutils.log import error
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from .models import Bb, Rubric
@@ -49,6 +50,12 @@ def BbCreateView_new(request):
         form = BbForm(request.POST)
         if form.is_valid():
             form.save()
+            return redirect('bbsite_app:index')
+        else:
+            error = 'Форма была не верной'
+            template = 'bboard/create_new.html'
+            context = {'form': form, 'error': error}
+            return render(request, template, context)
 
         # bb = Bb.objects.create()
         # bb.title = request.POST['title']
@@ -56,8 +63,7 @@ def BbCreateView_new(request):
         # bb.price = request.POST['price']
         # bb.rubric = Rubric.objects.get(pk=request.POST['rubric'])
         # bb.save()
-
-        return redirect('bbsite_app:index')
+       
         # template = 'bboard/index.html'
         # bbs = Bb.objects.all()
         # rubrics = Rubric.objects.all()
