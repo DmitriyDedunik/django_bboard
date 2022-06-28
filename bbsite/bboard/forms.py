@@ -1,4 +1,4 @@
-from django.forms import ModelForm, TextInput, Textarea
+from django.forms import ModelForm, TextInput, Textarea, NumberInput
 from .models import Bb, Rubric
 
 class BbForm(ModelForm):
@@ -9,10 +9,10 @@ class BbForm(ModelForm):
         widgets = {
             'title': TextInput(attrs={
                 'PlaceHolder': 'Наименование'
-            }),
+            }),           
             'content': Textarea(attrs={
                 'PlaceHolder': 'Описание'
-            }),
+            }),  
             'rubric': TextInput(attrs={
                 'PlaceHolder': 'Рубрика'
             }),              
