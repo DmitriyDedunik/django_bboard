@@ -1,8 +1,9 @@
 from distutils.log import error
+from xml.parsers.expat import model
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from .models import Bb, Rubric
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, UpdateView
 from .forms import BbForm, RubricForm
 
 # def index(request):
@@ -36,6 +37,18 @@ class BbCreateView(CreateView):
         context['rubrics'] = Rubric.objects.all()
         return context
 
+
+class New_update(UpdateView):
+    template_name = 'bboard/create.html'
+    form_class = BbForm
+    success_url = reverse_lazy('bbsite_app:index')
+    model = Bb
+    
+    pk_new_id = 'new_id'
+
+    def get_object(self, new_id=None):
+        return self.model.objects.get(pk=self.kwargs.get(self.pk_new_id))
+        
 
 class RubricCreate(CreateView):
     template_name = 'bboard/create_rubric.html'
@@ -84,4 +97,3 @@ def by_rubric(request, rubric_id):
     rubrics = Rubric.objects.all()
     context = {'bbs': bbs, 'rubric': rubric, 'rubrics': rubrics}
     return render(request, template, context)
-
