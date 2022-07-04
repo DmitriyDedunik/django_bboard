@@ -12,10 +12,7 @@ class BbForm(ModelForm):
             }),           
             'content': Textarea(attrs={
                 'PlaceHolder': 'Описание'
-            }),  
-            'rubric': TextInput(attrs={
-                'PlaceHolder': 'Рубрика'
-            }),              
+            })              
             }
 
 class RubricForm(ModelForm):

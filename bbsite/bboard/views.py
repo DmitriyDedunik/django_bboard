@@ -97,3 +97,21 @@ def by_rubric(request, rubric_id):
     rubrics = Rubric.objects.all()
     context = {'bbs': bbs, 'rubric': rubric, 'rubrics': rubrics}
     return render(request, template, context)
+
+# def home(request):
+#     if request.method == 'POST':
+#         form = ProfileForm(request.POST)
+#         form.set_user_id(request.user.id)
+#         if form.is_valid():
+#             form.save()
+#             return HttpResponseRedirect('/seller')
+#         else:
+#             print('errors')
+#             print(form.errors)
+#     else:
+#         try:
+#             profile = Profile.objects.get(user_id=request.user.id)
+#             form = ProfileForm(instance=profile)
+#         except Profile.DoesNotExist:
+#             form = ProfileForm()
+#     return render(request, "seller/home.html", {'form': form})
