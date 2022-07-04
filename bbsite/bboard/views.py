@@ -46,7 +46,7 @@ class New_update(UpdateView):
     
     pk_new_id = 'new_id'
 
-    def get_object(self, new_id=None):
+    def get_object(self, setting=None):
         return self.model.objects.get(pk=self.kwargs.get(self.pk_new_id))
         
 
