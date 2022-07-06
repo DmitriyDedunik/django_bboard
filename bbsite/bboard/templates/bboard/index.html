@@ -12,11 +12,11 @@
    {%endif%}
    {% for bb in bbs %}
       <div>
-         <h2><a href="{% url 'bbsite_app:new_update' bb.id %}"> {{ bb.title }}</a></h2>
+         <h2><a href="{% url 'bboard:detail' bb.id %}"> {{ bb.title }}</a></h2>
          <p>{{bb.content}}</p>
          <p>{{bb.price}}</p>
          <p>{{bb.published|date:'d.m.y H:i:s'}}</p>
-         <a href="{% url 'bbsite_app:by_rubric' bb.rubric.id %}"> {{ bb.rubric.name }}</a><br/>
+         <a href="{% url 'bboard:by_rubric' bb.rubric.id %}"> {{ bb.rubric.name }}</a><br/>
       </div>
    {% endfor %}
 {% endblock %}

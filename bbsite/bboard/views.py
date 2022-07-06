@@ -1,10 +1,11 @@
 from distutils.log import error
 from xml.parsers.expat import model
 from django.shortcuts import redirect, render
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from .models import Bb, Rubric
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from .forms import BbForm, RubricForm
+from django.views.generic.detail import DetailView
 
 # def index(request):
 #     context = 'Доска объявлений\n\n'
@@ -27,10 +28,13 @@ def rubrics(request):
     return render(request, template, context)    
 
 
+class BbDetailView(DetailView):
+    model = Bb
+    
 class BbCreateView(CreateView):
     template_name = 'bboard/create.html'
     form_class = BbForm
-    success_url = reverse_lazy('bbsite_app:index')
+    success_url = reverse_lazy('bboard:index')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -38,22 +42,29 @@ class BbCreateView(CreateView):
         return context
 
 
-class New_update(UpdateView):
+class NewUpdate(UpdateView):
     template_name = 'bboard/create.html'
     form_class = BbForm
-    success_url = reverse_lazy('bbsite_app:index')
+    # success_url = reverse_lazy('bboard:detail', pk= kwargs={'pk': pk})
     model = Bb
     
-    pk_new_id = 'new_id'
+    def get_success_url(self):
+        return reverse('bboard:detail', kwargs={'pk': self.kwargs['pk']})
+    # pk_new_id = 'new_id'
 
-    def get_object(self, setting=None):
-        return self.model.objects.get(pk=self.kwargs.get(self.pk_new_id))
+    # def get_object(self, setting=None):
+    #     return self.model.objects.get(pk=self.kwargs.get(self.pk_new_id))
+
+
+class BbDeleteView(DeleteView):
+    model = Bb
+    success_url = reverse_lazy('bboard:index')
         
 
 class RubricCreate(CreateView):
     template_name = 'bboard/create_rubric.html'
     form_class = RubricForm
-    success_url = reverse_lazy('bbsite_app:index')
+    success_url = reverse_lazy('bboard:index')
     
 
 def BbCreateView_new(request):
@@ -63,7 +74,7 @@ def BbCreateView_new(request):
         form = BbForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('bbsite_app:index')
+            return redirect('bboard:index')
         else:
             error = 'Форма была не верной'
             template = 'bboard/create_new.html'

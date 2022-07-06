@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Детали объявления
+{% endblock %}
+
+{% block content %}
+   <h1>Детали объявления</h1>
+
+<div>
+    <h2>{{ object.title }}</h2>
+    <a href="{% url 'bboard:new_update' object.id %}">Редактировать</a>
+    <a href="{% url 'bboard:delete' object.id %}">Удалить</a>
+    <p>{{object.content}}</p>
+    <p>{{object.price}}</p>
+    <p>{{object.published|date:'d.m.y H:i:s'}}</p>
+    <a href="{% url 'bboard:by_rubric' object.rubric.id %}"> {{ object.rubric.name }}</a><br/>
+</div>
+   
+{% endblock %}

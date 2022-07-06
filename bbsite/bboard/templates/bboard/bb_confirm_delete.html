@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Удаление объявления
+{% endblock %}
+
+{% block content %}
+   <h1>Удаление объявления</h1>
+
+    <form method="post">{% csrf_token %}
+        <p>Are you sure you want to delete "{{ object }}"?</p>
+        {{ form }}
+        <input type="submit" value="Confirm">
+    </form>   
+   
+{% endblock %}
