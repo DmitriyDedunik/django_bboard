@@ -4,7 +4,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse_lazy, reverse
 from .models import Bb, Rubric
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from .forms import BbForm, RubricForm
+from .forms import BbForm, RubricForm, CityForm
 from django.views.generic.detail import DetailView
 
 # def index(request):
@@ -28,9 +28,16 @@ def rubrics(request):
     return render(request, template, context)    
 
 
+class CityCreateView(CreateView):
+    template_name = 'bboard/create_city.html'
+    form_class = CityForm
+    success_url = reverse_lazy('bboard:index') 
+
+
 class BbDetailView(DetailView):
     model = Bb
-    
+
+
 class BbCreateView(CreateView):
     template_name = 'bboard/create.html'
     form_class = BbForm

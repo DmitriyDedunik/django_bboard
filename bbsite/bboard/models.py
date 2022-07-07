@@ -1,6 +1,7 @@
 from importlib.resources import contents
 from tabnanny import verbose
 from turtle import title
+from unicodedata import name
 from django.db import models
 
 
@@ -14,6 +15,7 @@ class Bb(models.Model):
                             verbose_name='Дата публикации',
                             )
     rubric = models.ForeignKey('Rubric', null=True, on_delete=models.SET_NULL, verbose_name='Рубрика')
+    city = models.ForeignKey('City', null=True, on_delete=models.SET_NULL, verbose_name='Город')
 
     class Meta:
         ordering = ('-published',)
@@ -34,3 +36,15 @@ class Rubric(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class City(models.Model):
+    name = models.CharField(max_length=150, verbose_name='Название', db_index=True)
+
+    class Meta:
+        ordering = ['name']
+        verbose_name = 'Город'
+        verbose_name_plural = 'Города'
+
+    def __str__(self):
+        return self.name    
