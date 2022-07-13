@@ -111,7 +111,8 @@ def BbCreateView_new(request):
 def by_rubric(request, rubric_id):
     template = 'bboard/index.html'
     rubric = Rubric.objects.get(pk=rubric_id)
-    bbs = Bb.objects.filter(rubric = rubric)
+    # bbs = Bb.objects.filter(rubric = rubric)
+    bbs = rubric.bbs.all()
     rubrics = Rubric.objects.all()
     context = {'bbs': bbs, 'rubric': rubric, 'rubrics': rubrics}
     return render(request, template, context)

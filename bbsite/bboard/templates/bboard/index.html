@@ -10,14 +10,25 @@
    {%else%}
       <h1>Объявления</h1>
    {%endif%}
-   {% for bb in bbs %}
-      <div>
-         <h2><a href="{% url 'bboard:detail' bb.id %}"> {{ bb.title }}</a></h2>
-         <p>{{bb.content}}</p>
-         <p>{{bb.city}}</p>
-         <p>{{bb.price}}</p>
-         <p>{{bb.published|date:'d.m.y H:i:s'}}</p>
-         <a href="{% url 'bboard:by_rubric' bb.rubric.id %}"> {{ bb.rubric.name }}</a><br/>
+
+    <div class="container">
+      <div class="row">
+         {% for bb in bbs %}
+            <div class="card col-3 m-5">
+               <img src="..." class="card-img-top" alt="...">
+               <div class="card-body">
+               <h5 class="card-title">{{ bb.title }}</h5>
+               <p class="card-text">
+                  <p>{{bb.content}}</p>
+                  <p>{{bb.city}}</p>
+                  <p>{{bb.price}}</p>
+                  <p>{{bb.published|date:'d.m.y H:i:s'}}</p>
+               </p>
+               <a href="{% url 'bboard:detail' bb.id %}" class="btn btn-primary">Подробнее</a>
+               <a href="{% url 'bboard:by_rubric' bb.rubric.id %}" class="btn btn-info">{{ bb.rubric.name }}</a>
+               </div>
+            </div>
+          {% endfor %}
       </div>
-   {% endfor %}
+    </div>
 {% endblock %}

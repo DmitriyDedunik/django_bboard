@@ -1,7 +1,3 @@
-from importlib.resources import contents
-from tabnanny import verbose
-from turtle import title
-from unicodedata import name
 from django.db import models
 
 
@@ -14,8 +10,8 @@ class Bb(models.Model):
                             db_index=True,
                             verbose_name='Дата публикации',
                             )
-    rubric = models.ForeignKey('Rubric', null=True, on_delete=models.SET_NULL, verbose_name='Рубрика')
-    city = models.ForeignKey('City', null=True, on_delete=models.SET_NULL, verbose_name='Город')
+    rubric = models.ForeignKey('Rubric', null=True, on_delete=models.SET_NULL, verbose_name='Рубрика', related_name='bbs')
+    city = models.ForeignKey('City', null=True, on_delete=models.SET_NULL, verbose_name='Город', related_name='bbs')
 
     class Meta:
         ordering = ('-published',)
