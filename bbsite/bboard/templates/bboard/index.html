@@ -19,10 +19,10 @@
                <div class="card-body">
                <h5 class="card-title">{{ bb.title }}</h5>
                <p class="card-text">
-                  <p>{{bb.content}}</p>
-                  <p>{{bb.city}}</p>
-                  <p>{{bb.price}}</p>
-                  <p>{{bb.published|date:'d.m.y H:i:s'}}</p>
+                  {%if bb.content %}<p>{{bb.content}}</p>{%endif%}
+                  {%if bb.city %}<p>{{bb.city}}</p>{%endif%}
+                  {%if bb.price %}<p>{{bb.price}}</p>{%endif%}
+                 <p>{{bb.published|date:'d.m.y H:i:s'}}</p>
                </p>
                <a href="{% url 'bboard:detail' bb.id %}" class="btn btn-primary">Подробнее</a>
                <a href="{% url 'bboard:by_rubric' bb.rubric.id %}" class="btn btn-info">{{ bb.rubric.name }}</a>
