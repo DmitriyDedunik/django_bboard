@@ -1,4 +1,3 @@
-from venv import create
 from django.urls import path
 from .views import RubricCreate, index, BbCreateView, BbCreateView_new, by_rubric, rubrics, NewUpdate, BbDetailView, BbDeleteView, CityCreateView
 
