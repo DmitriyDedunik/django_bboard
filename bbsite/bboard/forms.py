@@ -4,7 +4,7 @@ from .models import Bb, Rubric, City
 class BbForm(ModelForm):
     class Meta:
         model = Bb
-        fields = ('title', 'price', 'content', 'rubric', 'city')
+        fields = ('title', 'price', 'content', 'rubric', 'city', 'image')
 
         widgets = {
             'title': TextInput(attrs={

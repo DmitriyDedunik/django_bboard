@@ -14,12 +14,14 @@ from django.views.generic.detail import DetailView
 
 #     return HttpResponse(context, content_type='text\plain; charset=cp1251')
 
+
 def index(request):
     template = 'bboard/index.html'
     bbs = Bb.objects.all()
     rubrics = Rubric.objects.all()
     context = {'bbs': bbs, 'rubrics': rubrics}
     return render(request, template, context)
+
 
 def rubrics(request):
     template = 'bboard/rubrics.html'
@@ -107,6 +109,7 @@ def BbCreateView_new(request):
         rubrics = Rubric.objects.all()
         context = {'form': form, 'rubrics': rubrics}
         return render(request, template, context)   
+
 
 def by_rubric(request, rubric_id):
     template = 'bboard/index.html'

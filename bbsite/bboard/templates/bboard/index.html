@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{%load static%}
 
 {% block title %}
 Объявления
@@ -15,7 +16,11 @@
       <div class="row">
          {% for bb in bbs %}
             <div class="card col-3 m-5">
-               <img src="..." class="card-img-top" alt="...">
+               {%if bb.image%}
+                  <img src="{{bb.image.url}}" class="card-img-top" alt="...">
+               {%else%}
+                  <img src="{% static 'img/blank.png' %}" class="card-img-top" alt="...">
+               {%endif%}
                <div class="card-body">
                <h5 class="card-title">{{ bb.title }}</h5>
                <p class="card-text">
