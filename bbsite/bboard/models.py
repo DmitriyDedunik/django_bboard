@@ -9,7 +9,7 @@ def accept_city(value):
 
 
 class Bb(models.Model):
-    title = models.CharField(max_length=50, verbose_name='Наименование')
+    title = models.CharField(max_length=50, verbose_name='Наименование', help_text='Name')
     content = models.TextField(null=True, blank=True, verbose_name='Описание')
     price = models.FloatField(null=True, blank=True, verbose_name='Цена', default=0, validators=[MinValueValidator(0)])
     published = models.DateTimeField(

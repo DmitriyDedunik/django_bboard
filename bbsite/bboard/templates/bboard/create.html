@@ -1,16 +1,49 @@
 {% extends 'base.html' %}
 
 {% block title %}
-Новое объявление
+{%if form.instance.id%}
+   Новое объявление
+{%else%}
+   Редактировать объявление
+{%endif%}
 {% endblock %}
 
 {% block content %}
-   <h1>Новое объявление</h1>
+   {% load user_filters %}
+   {% if form.instance.id %}
+      <h1>Новое объявление</h1>
+   {%else%}
+      <h1>Редактировать объявление</h1>
+   {%endif%}
+   {% if form.errors %}
+      {% for field in form %}
+         {% for error in field.errors %}
+            <div class="alert alert-danger">
+               {{error|escape}}
+            </div>
+         {% endfor %}
+      {% endfor %}
+      {% for error in form.non_field_errors %}
+         <div class="alert alert-danger">
+            {{error|escape}}
+         </div>            
+      {% endfor %}
+   {% endif %}
    <form method="post" enctype="multipart/form-data">
       {% csrf_token %}
-      {{ form.as_p }}
+      {% for field in form %}
+         <div class="form-group row my-3">
+            <label for="{{field.id_for_label}}">{{field.label}}</label>
+            <div>
+               {{field|addclass:'form-control'}}
+               {% if field.help_text %}
+                  <small>{{field.help_text}}</small>
+               {% endif %}
+            </div>            
+         </div>
+      {% endfor %}
       {%if form.instance.id%}
-      <input type="submit" value="Сохранить">
+         <input type="submit" value="Сохранить">
       {%else%}
          <input type="submit" value="Создать">
       {%endif%}      
