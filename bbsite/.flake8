@@ -1,0 +1,10 @@
+[flake8]
+
+ignore = 
+    WPS306
+
+exclude = 
+    migrations,
+    bulletin_board_env,
+    .vscode,
+    .idea

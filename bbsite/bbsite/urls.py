@@ -22,6 +22,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('bboard.urls')),
     path('bboard/', include('bboard.urls')),
+    path('bboard/', include('django.contrib.auth.urls')),
 ]
 
 if settings.DEBUG:

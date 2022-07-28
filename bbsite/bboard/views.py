@@ -4,7 +4,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse_lazy, reverse
 from .models import Bb, Rubric
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from .forms import BbForm, RubricForm, CityForm
+from .forms import BbForm, RubricForm, CityForm, RegistrationUserForm
 from django.views.generic.detail import DetailView
 
 # def index(request):
@@ -49,6 +49,10 @@ class BbCreateView(CreateView):
         context = super().get_context_data(**kwargs)
         context['rubrics'] = Rubric.objects.all()
         return context
+    
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
 
 
 class NewUpdate(UpdateView):
@@ -56,7 +60,11 @@ class NewUpdate(UpdateView):
     form_class = BbForm
     # success_url = reverse_lazy('bboard:detail', pk= kwargs={'pk': pk})
     model = Bb
-    
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
     def get_success_url(self):
         return reverse('bboard:detail', kwargs={'pk': self.kwargs['pk']})
     # pk_new_id = 'new_id'
@@ -137,3 +145,15 @@ def by_rubric(request, rubric_id):
 #         except Profile.DoesNotExist:
 #             form = ProfileForm()
 #     return render(request, "seller/home.html", {'form': form})
+
+class Registration(CreateView):
+    form_class = RegistrationUserForm
+    success_url = reverse_lazy('login')
+    template_name = 'registration.html'
+
+def My_Bb(request):
+    template = 'bboard/index.html'
+    bbs = Bb.objects.filter(user_id=request.user.id)
+    rubrics = {}
+    context = {'bbs': bbs, 'rubrics': rubrics}
+    return render(request, template, context)

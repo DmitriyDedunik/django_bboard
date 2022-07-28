@@ -42,3 +42,4 @@ docs/_build/
 bulletin_board_env/
 db.sqlite3
 media/
+.idea

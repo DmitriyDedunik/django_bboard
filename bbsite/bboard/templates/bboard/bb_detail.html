@@ -9,8 +9,10 @@
 
 <div>
     <h2>{{ object.title }}</h2>
+    {% if user.is_authenticated and user.id == object.user_id %}
     <a href="{% url 'bboard:new_update' object.id %}">Редактировать</a>
     <a href="{% url 'bboard:delete' object.id %}">Удалить</a>
+    {% endif%}
     <p>{{object.content}}</p>
     <p>{{object.city}}</p>
     <p>{{object.price}}</p>
