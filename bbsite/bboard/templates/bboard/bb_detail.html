@@ -18,6 +18,9 @@
     <p>{{object.price}}</p>
     <p>{{object.published|date:'d.m.y H:i:s'}}</p>
     <a href="{% url 'bboard:by_rubric' object.rubric.id %}"> {{ object.rubric.name }}</a><br/>
+    {% if user != bb.user %}
+        <a href="{% url 'bboard:send_message' bb.id bb.user.id %}" class="btn btn-primary">Написать сообщение</a>
+    {% endif %}
 </div>
    
 {% endblock %}

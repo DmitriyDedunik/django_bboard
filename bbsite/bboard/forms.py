@@ -1,12 +1,9 @@
 """Describe project forms."""
 from django.contrib.auth.forms import UserModel, UserCreationForm
 
-from bboard.models import Bb, City, Rubric
+from bboard.models import Bb, City, Rubric, Chat
 
 from django.forms import ModelForm, Textarea, TextInput
-
-
-
 
 
 class BbForm(ModelForm):
@@ -56,3 +53,12 @@ class RegistrationUserForm(UserCreationForm):
 
         model = UserModel
         fields = ('username', 'password1', 'password2')
+
+
+class ChatForm(ModelForm):
+    """Describe form by chat model."""
+
+    class Meta(object):
+        """Describe form properties."""
+        model = Chat
+        fields = ('message',)

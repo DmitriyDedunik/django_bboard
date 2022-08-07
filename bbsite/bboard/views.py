@@ -1,25 +1,35 @@
-from distutils.log import error
-from xml.parsers.expat import model
-from django.shortcuts import redirect, render
+"""Describe project views."""
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy, reverse
-from .models import Bb, Rubric
+from .models import Bb, Chat, Rubric
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from .forms import BbForm, RubricForm, CityForm, RegistrationUserForm
+from .forms import BbForm, RubricForm, CityForm, RegistrationUserForm, ChatForm
 from django.views.generic.detail import DetailView
+from django.contrib.auth.views import LoginView
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.paginator import Paginator
+from django.db.models import Q
+from django.contrib.auth.models import User
 
-# def index(request):
-#     context = 'Доска объявлений\n\n'
-#     for bb in Bb.objects.all():
-#         context += f'{bb.title} - {bb.price}\n{bb.content}\n{bb.published}\n\n'
-
-#     return HttpResponse(context, content_type='text\plain; charset=cp1251')
-
+ITEMS_PER_PAGE = 1
 
 def index(request):
+    
     template = 'bboard/index.html'
     bbs = Bb.objects.all()
+    paginator = Paginator(bbs, ITEMS_PER_PAGE)
+    
+    if 'page' in request.GET:
+        page_num = request.GET['page']
+    else:
+        page_num = 1
+
+    page = paginator.get_page(page_num)
+
     rubrics = Rubric.objects.all()
-    context = {'bbs': bbs, 'rubrics': rubrics}
+    context = {'bbs': page.object_list, 'rubrics': rubrics, 'page': page}
+    
     return render(request, template, context)
 
 
@@ -30,10 +40,14 @@ def rubrics(request):
     return render(request, template, context)    
 
 
-class CityCreateView(CreateView):
+class LRMixin(LoginRequiredMixin):
+    login_url = '/login/'
+
+
+class CityCreateView(LoginRequiredMixin, CreateView):
     template_name = 'bboard/create_city.html'
     form_class = CityForm
-    success_url = reverse_lazy('bboard:index') 
+    success_url = reverse_lazy('bboard:index')
 
 
 class BbDetailView(DetailView):
@@ -55,10 +69,9 @@ class BbCreateView(CreateView):
         return super().form_valid(form)
 
 
-class NewUpdate(UpdateView):
+class NewUpdate(LRMixin, UpdateView):
     template_name = 'bboard/create.html'
     form_class = BbForm
-    # success_url = reverse_lazy('bboard:detail', pk= kwargs={'pk': pk})
     model = Bb
 
     def form_valid(self, form):
@@ -67,23 +80,20 @@ class NewUpdate(UpdateView):
 
     def get_success_url(self):
         return reverse('bboard:detail', kwargs={'pk': self.kwargs['pk']})
-    # pk_new_id = 'new_id'
-
-    # def get_object(self, setting=None):
-    #     return self.model.objects.get(pk=self.kwargs.get(self.pk_new_id))
 
 
-class BbDeleteView(DeleteView):
+class BbDeleteView(LRMixin, DeleteView):
     model = Bb
     success_url = reverse_lazy('bboard:index')
         
 
-class RubricCreate(CreateView):
+class RubricCreate(LRMixin, CreateView):
     template_name = 'bboard/create_rubric.html'
     form_class = RubricForm
     success_url = reverse_lazy('bboard:index')
     
 
+@login_required(login_url='/login/')
 def BbCreateView_new(request):
 
     if request.method == "POST":      
@@ -98,19 +108,6 @@ def BbCreateView_new(request):
             context = {'form': form, 'error': error}
             return render(request, template, context)
 
-        # bb = Bb.objects.create()
-        # bb.title = request.POST['title']
-        # bb.content = request.POST['content']
-        # bb.price = request.POST['price']
-        # bb.rubric = Rubric.objects.get(pk=request.POST['rubric'])
-        # bb.save()
-       
-        # template = 'bboard/index.html'
-        # bbs = Bb.objects.all()
-        # rubrics = Rubric.objects.all()
-        # context = {'bbs': bbs, 'rubrics': rubrics}
-        # return render(request, template, context)
-
     else:
         template = 'bboard/create_new.html'
         form = BbForm()
@@ -122,38 +119,90 @@ def BbCreateView_new(request):
 def by_rubric(request, rubric_id):
     template = 'bboard/index.html'
     rubric = Rubric.objects.get(pk=rubric_id)
-    # bbs = Bb.objects.filter(rubric = rubric)
     bbs = rubric.bbs.all()
     rubrics = Rubric.objects.all()
     context = {'bbs': bbs, 'rubric': rubric, 'rubrics': rubrics}
     return render(request, template, context)
 
-# def home(request):
-#     if request.method == 'POST':
-#         form = ProfileForm(request.POST)
-#         form.set_user_id(request.user.id)
-#         if form.is_valid():
-#             form.save()
-#             return HttpResponseRedirect('/seller')
-#         else:
-#             print('errors')
-#             print(form.errors)
-#     else:
-#         try:
-#             profile = Profile.objects.get(user_id=request.user.id)
-#             form = ProfileForm(instance=profile)
-#         except Profile.DoesNotExist:
-#             form = ProfileForm()
-#     return render(request, "seller/home.html", {'form': form})
 
 class Registration(CreateView):
     form_class = RegistrationUserForm
     success_url = reverse_lazy('login')
     template_name = 'registration.html'
 
-def My_Bb(request):
+class UserLogin(LoginView):
+    template_name = 'registration/login.html'
+    
+
+def my_bb(request):
     template = 'bboard/index.html'
     bbs = Bb.objects.filter(user_id=request.user.id)
-    rubrics = {}
-    context = {'bbs': bbs, 'rubrics': rubrics}
+    context = {'bbs': bbs, 'rubrics': {}}
     return render(request, template, context)
+
+
+def send_message(request, bb_id, user_id):
+    bb = get_object_or_404(Bb, pk=bb_id)
+    user_to = get_object_or_404(User, pk=user_id)
+    chat = Chat.objects.filter(
+        Q(
+            Q(Q(user_from=request.user)&Q(user_to=user_to))|
+            Q(Q(user_from=user_to)&Q(user_to=request.user))
+        )&
+        Q(bb=bb)
+    )
+    
+    if request.method == "POST":      
+        
+        form = ChatForm(request.POST)
+        if form.is_valid():
+            form_chat = form.save(commit=False)
+            form_chat.user_from = request.user
+            form_chat.user_to = user_to
+            form_chat.bb = bb
+            form_chat.save()
+
+            return redirect(reverse(
+                'bboard:send_message', 
+                kwargs={'bb_id': bb_id, 'user_id': user_id}
+            ))
+        else:
+            error = 'Форма была не верной'
+            template = 'bboard/chat.html'
+            context = {'form': form, 'error': error}
+            return render(request, template, context)
+
+    else:
+        template = 'bboard/chat.html'
+        form = ChatForm()
+        context = {'form': form, 'bb': bb, 'chat': chat}
+        return render(request, template, context)
+
+def chats(request):
+        
+        template = 'bboard/chats.html'
+        chats = Chat.objects.filter(
+            Q(
+                Q(user_from=request.user)|
+                Q(user_to=request.user)
+            )
+        )
+
+        new_chats = []
+        bb_title = []
+        user_from = []
+        for chat in chats:
+
+            if request.user == chat.user_from:
+                user_chat = chat.user_to
+            else:
+                user_chat = chat.user_from
+            
+            if chat.bb.title not in bb_title or user_chat not in user_from:
+                new_chats.append(chat)
+                bb_title.append(chat.bb.title)
+                user_from.append(user_chat)
+
+        context = {'chats': new_chats}
+
+        return render(request, template, context)     

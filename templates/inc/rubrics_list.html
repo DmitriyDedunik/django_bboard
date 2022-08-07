@@ -1,0 +1,3 @@
+{% for rubric in rubrics %}
+    <li><a href="{% url 'bboard:by_rubric' rubric.id %}"> {{ rubric.name }}</a><br/></li>
+{%endfor%}

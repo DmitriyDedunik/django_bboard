@@ -7,4 +7,6 @@ exclude =
     migrations,
     bulletin_board_env,
     .vscode,
-    .idea
+    .idea,
+    C:\Users\Дмитрий\AppData\Local\Programs\Python\Python310,
+    django

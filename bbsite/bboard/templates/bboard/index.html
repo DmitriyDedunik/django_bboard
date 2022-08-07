@@ -35,5 +35,20 @@
             </div>
           {% endfor %}
       </div>
+      {% if page %}
+      <div class="row">
+         <div class="col-12">
+         {% if page.has_previous %}
+         <a href="?page={{page.previous_page_number}}">Предыдущая</a>
+         {% endif %}
+         &nbsp;
+         {{page.number}} из {{page.paginator.num_pages}}
+         &nbsp;
+         {% if page.has_next %}
+         <a href="?page={{page.next_page_number}}">Следующая</a>
+         {%endif%}
+         </div>
+      </div>
+      {% endif %}
     </div>
 {% endblock %}

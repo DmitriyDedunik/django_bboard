@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Чаты
+{% endblock %}
+
+{% block content %}
+    <div class="list-group">
+    {% for chat in chats %}
+        {% if user == chat.user_from %}
+            <a href="{% url 'bboard:send_message' chat.bb.id chat.user_to.id %}" class="list-group-item list-group-item-action">{{chat.bb.title}} {{chat.user_to}}</a>
+        {% else %}
+            <a href="{% url 'bboard:send_message' chat.bb.id chat.user_from.id %}" class="list-group-item list-group-item-action">{{chat.bb.title}} {{chat.user_from}}</a>
+        {% endif %}
+    {% endfor %}
+    </div>
+{% endblock %}
