@@ -12,7 +12,7 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.contrib.auth.models import User
 
-ITEMS_PER_PAGE = 1
+ITEMS_PER_PAGE = 2
 
 def index(request):
     
@@ -130,6 +130,7 @@ class Registration(CreateView):
     success_url = reverse_lazy('login')
     template_name = 'registration.html'
 
+
 class UserLogin(LoginView):
     template_name = 'registration/login.html'
     
@@ -142,6 +143,7 @@ def my_bb(request):
 
 
 def send_message(request, bb_id, user_id):
+    
     bb = get_object_or_404(Bb, pk=bb_id)
     user_to = get_object_or_404(User, pk=user_id)
     chat = Chat.objects.filter(
@@ -204,5 +206,5 @@ def chats(request):
                 user_from.append(user_chat)
 
         context = {'chats': new_chats}
-
+        
         return render(request, template, context)     

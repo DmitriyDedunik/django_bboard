@@ -1,7 +1,7 @@
 """Describe project admin."""
 from django.contrib import admin
 
-from bboard.models import Bb, Rubric
+from bboard.models import Bb, Rubric, City
 
 
 class BbAdmin(admin.ModelAdmin):
@@ -15,3 +15,5 @@ class BbAdmin(admin.ModelAdmin):
 admin.site.register(Bb, BbAdmin)
 
 admin.site.register(Rubric)
+
+admin.site.register(City)
