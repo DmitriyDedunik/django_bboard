@@ -1,6 +1,8 @@
 """Describe project views."""
 from email.policy import default
 from itertools import count
+import logging
+from tracemalloc import start
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -16,6 +18,8 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from .forms import BbForm, ChatForm, CityForm, RegistrationUserForm, RubricForm
 from .models import Bb, Chat, Rubric
+
+logger = logging.getLogger(__name__)
 
 ITEMS_PER_PAGE = 2
 
@@ -42,6 +46,7 @@ def rubrics(request):
     template = 'bboard/rubrics.html'
     rubrics = Rubric.objects.all()
     context = {'rubrics': rubrics}
+    logger.info('Запуск страницы рубрик') #логирование
     return render(request, template, context)    
 
 
@@ -96,6 +101,10 @@ class RubricCreate(LRMixin, CreateView):
     template_name = 'bboard/create_rubric.html'
     form_class = RubricForm
     success_url = reverse_lazy('bboard:index')
+
+    def post(self, request):
+        logger.info('Создание рубрики: ' + request.POST['name']) #логирование
+        return reverse('bboard:index')
     
 
 @login_required(login_url='/login/')
