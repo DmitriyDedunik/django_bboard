@@ -124,9 +124,10 @@ class City(models.Model):
         """
         return self.name
 
+
 class Chat(models.Model):
     """Describe Chat model."""
-    
+
     user_from = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.RESTRICT,
@@ -141,7 +142,7 @@ class Chat(models.Model):
     )
     message = models.TextField(
         verbose_name='Сообщение',
-    )     
+    )
     bb = models.ForeignKey(
         'Bb',
         null=True,

@@ -23,6 +23,7 @@ urlpatterns = [
     path('', include('bboard.urls')),
     path('bboard/', include('bboard.urls')),
     path('bboard/', include('django.contrib.auth.urls')),
+    path('api/V1/', include('bb_api.urls')),
 ]
 
 if settings.DEBUG:

@@ -1,16 +1,21 @@
 """Describe project views."""
-from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse_lazy, reverse
-from .models import Bb, Chat, Rubric
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from .forms import BbForm, RubricForm, CityForm, RegistrationUserForm, ChatForm
-from django.views.generic.detail import DetailView
-from django.contrib.auth.views import LoginView
+from email.policy import default
+from itertools import count
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.paginator import Paginator
-from django.db.models import Q
 from django.contrib.auth.models import User
+from django.contrib.auth.views import LoginView
+from django.core.paginator import Paginator
+from django.db.models import Case, Count, Q, Value, When
+from django.db.models.query import QuerySet
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse, reverse_lazy
+from django.views.generic.detail import DetailView
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
+
+from .forms import BbForm, ChatForm, CityForm, RegistrationUserForm, RubricForm
+from .models import Bb, Chat, Rubric
 
 ITEMS_PER_PAGE = 2
 
@@ -190,21 +195,21 @@ def chats(request):
             )
         )
 
-        new_chats = []
-        bb_title = []
-        user_from = []
-        for chat in chats:
+        chats = chats.annotate(
+            chat_user = Case(
+                When(Q(user_from=request.user), then='user_to'),
+                default='user_from'
+            ),
+            chat_username = Case(
+                When(Q(user_from=request.user), then='user_to__username'),
+                default='user_from__username'
+            )
+        )
 
-            if request.user == chat.user_from:
-                user_chat = chat.user_to
-            else:
-                user_chat = chat.user_from
-            
-            if chat.bb.title not in bb_title or user_chat not in user_from:
-                new_chats.append(chat)
-                bb_title.append(chat.bb.title)
-                user_from.append(user_chat)
+        chats = chats.values('bb', 'chat_user', 'bb__title', 'chat_username')
 
-        context = {'chats': new_chats}
+        chats = chats.annotate(count=Count('chat_user', distinct=True))
+
+        context = {'chats': chats}
         
-        return render(request, template, context)     
+        return render(request, template, context)

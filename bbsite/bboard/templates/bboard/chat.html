@@ -6,14 +6,12 @@
 
 {% block content %}
    <a href="{% url 'bboard:detail' bb.id %}">{{bb.title}}</a>
-   <div class="row">
-    <ul class="list-group">
+   <div>
     {% for message in chat %}
-    <li class="list-group-item">
+    <div style="width: 30%; display: block;" class="pull-right">
     {{message.dt}} {{message.user_from}}: {{message.message}}
-    </li>
+    </div>
     {% endfor %}
-    </ul>
     </div>
    <form method="post">
       {% csrf_token %}
