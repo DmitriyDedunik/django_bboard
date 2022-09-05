@@ -29,3 +29,4 @@ def json_test2(request):
     answer = {'a': request.GET['text_json'], 'b': request.body.decode('utf8').replace("'", '"')}
 
     return JsonResponse(answer, safe=False, json_dumps_params={'indent':4})
+
