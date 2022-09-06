@@ -15,7 +15,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
-
+from django.http import HttpRequest, HttpResponse
 from .forms import BbForm, ChatForm, CityForm, RegistrationUserForm, RubricForm
 from .models import Bb, Chat, Rubric
 
@@ -101,10 +101,10 @@ class RubricCreate(LRMixin, CreateView):
     template_name = 'bboard/create_rubric.html'
     form_class = RubricForm
     success_url = reverse_lazy('bboard:index')
-
-    def post(self, request):
+    
+    def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         logger.info('Создание рубрики: ' + request.POST['name']) #логирование
-        return reverse('bboard:index')
+        return super().post(request, *args, **kwargs)
     
 
 @login_required(login_url='/login/')
