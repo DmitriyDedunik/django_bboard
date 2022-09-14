@@ -29,4 +29,5 @@ urlpatterns = [
     path('login/', views.UserLogin.as_view(), name='user_login'),
     path('send_message/<int:bb_id>/<int:user_id>/', views.send_message, name='send_message'),
     path('chats/', views.chats, name='chats'),
+    path('yandex_response/', views.yandex_response, name='yandex_response'),
 ]

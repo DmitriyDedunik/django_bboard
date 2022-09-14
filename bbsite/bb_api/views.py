@@ -30,3 +30,13 @@ def json_test2(request):
 
     return JsonResponse(answer, safe=False, json_dumps_params={'indent':4})
 
+
+def json_test_post(request):
+    
+    answer = {'a': request.POST['a'], 'b': request.POST['b'], 'c': int(request.POST['a']) + int(request.POST['b'])}
+
+    return JsonResponse(answer, safe=False, json_dumps_params={'indent':4})
+
+
+def api_stend(request):
+    return render(request, 'api_stend.html')

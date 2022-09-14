@@ -1,14 +1,15 @@
 """Describe project views."""
-from email.policy import default
-from itertools import count
+from email import header
+import email
 import logging
-from tracemalloc import start
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView
+from django.contrib.auth import login
 from django.core.paginator import Paginator
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Case, Count, Q, Value, When
 from django.db.models.query import QuerySet
 from django.shortcuts import get_object_or_404, redirect, render
@@ -18,6 +19,8 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.http import HttpRequest, HttpResponse
 from .forms import BbForm, ChatForm, CityForm, RegistrationUserForm, RubricForm
 from .models import Bb, Chat, Rubric
+import requests
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -222,3 +225,33 @@ def chats(request):
         context = {'chats': chats}
         
         return render(request, template, context)
+
+def yandex_response(request):
+    code = request.GET['code']
+    response_token = requests.post(
+        'https://oauth.yandex.ru/token', {
+            'grant_type': 'authorization_code',
+            'code': code,
+            'client_id': '62d3ee47742b47979d64e1208e58fed0',
+            'client_secret': '4f64ebc5e63b448796253d2ebfba1b45',
+            }
+    )
+
+    detail_response_token = json.loads(response_token.content.decode('utf8').replace("'", '"'))
+    token = detail_response_token['access_token']
+    
+    headers = {'Authorization': 'OAuth ' +  token}
+    response_user = requests.get('https://login.yandex.ru/info?format=json', headers=headers)
+    detail_response_user = json.loads(response_user.content.decode('utf8').replace("'", '"'))
+    email = detail_response_user['default_email']
+    user_name = detail_response_user['login']
+    password = detail_response_user['id']
+
+    try:
+        user = User.objects.get(email=email)
+    except ObjectDoesNotExist:
+        user = User.objects.create_user(user_name, email, password)
+        
+    login(request, user)
+
+    return redirect(reverse('bboard:index'))
