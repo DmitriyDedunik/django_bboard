@@ -6,6 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView
 from django.contrib.auth import login
+from django.contrib.auth.forms import AuthenticationForm
 from django.core.paginator import Paginator
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Case, Count, Q, When
@@ -19,6 +20,7 @@ from .forms import BbForm, ChatForm, CityForm, RegistrationUserForm, RubricForm
 from .models import Bb, Chat, Rubric
 import requests
 import json
+import urllib.parse
 
 logger = logging.getLogger(__name__)
 
@@ -148,6 +150,22 @@ class Registration(CreateView):
 
 class UserLogin(LoginView):
     template_name = 'registration/login.html'
+    form = AuthenticationForm()
+    def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+
+        params = {
+            'client_id': '707920910456-p8h5a6o68t5kdbq3a28vii9oh7i18hov.apps.googleusercontent.com',
+            'redirect_uri': 'http://localhost:8000/google_response/',
+            'response_type': 'code',
+            'scope': 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile',
+            'state': 123,
+            'prompt': 'select_account',
+        }
+
+        safe_string = 'https://accounts.google.com/o/oauth2/auth?'
+        safe_string += urllib.parse.urlencode(params)
+
+        return render(request, self.template_name, {'google_link': safe_string, 'form': self.form})
     
 
 def my_bb(request):
@@ -195,6 +213,7 @@ def send_message(request, bb_id, user_id):
         context = {'form': form, 'bb': bb, 'chat': chat}
         return render(request, template, context)
 
+
 def chats(request):
         
         template = 'bboard/chats.html'
@@ -224,6 +243,7 @@ def chats(request):
         
         return render(request, template, context)
 
+
 def yandex_response(request):
     code = request.GET['code']
     response_token = requests.post(
@@ -243,6 +263,45 @@ def yandex_response(request):
     detail_response_user = json.loads(response_user.content.decode('utf8').replace("'", '"'))
     email = detail_response_user['default_email']
     user_name = detail_response_user['login']
+    password = detail_response_user['id']
+
+    try:
+        user = User.objects.get(email=email)
+    except ObjectDoesNotExist:
+        user = User.objects.create_user(user_name, email, password)
+        
+    login(request, user)
+
+    return redirect(reverse('bboard:index'))
+
+
+def google_response(request):
+    code = request.GET['code']
+    response_token = requests.post(
+        'https://accounts.google.com/o/oauth2/token', {
+            'client_id': '707920910456-p8h5a6o68t5kdbq3a28vii9oh7i18hov.apps.googleusercontent.com',
+            'client_secret': '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',
+            'redirect_uri': 'http://localhost:8000/google_response/',
+            'grant_type': 'authorization_code',
+            'code': code,
+            }
+    )
+
+    detail_response_token = json.loads(response_token.content.decode('utf8').replace("'", '"'))
+    token = detail_response_token['access_token']
+    id_token = detail_response_token['id_token']
+
+    params = {
+        'access_token': token,
+        'id_token': id_token,
+        'token_type': 'Bearer',
+        'expires_in': 3599,
+    }
+
+    response_user = requests.get('https://www.googleapis.com/oauth2/v1/userinfo?' + urllib.parse.urlencode(params))
+    detail_response_user = json.loads(response_user.content.decode('utf8').replace("'", '"'))
+    email = detail_response_user['email']
+    user_name = detail_response_user['name']
     password = detail_response_user['id']
 
     try:

@@ -30,4 +30,5 @@ urlpatterns = [
     path('send_message/<int:bb_id>/<int:user_id>/', views.send_message, name='send_message'),
     path('chats/', views.chats, name='chats'),
     path('yandex_response/', views.yandex_response, name='yandex_response'),
+    path('google_response/', views.google_response, name='google_response'),
 ]
